@@ -7,7 +7,7 @@ import 'package:rick_and_morty_app/modules/home_module/data/datasources/remote_d
 import 'package:rick_and_morty_app/modules/home_module/domain/models/characters_model.dart';
 
 import '../../../../core/errors/failure.dart';
-import '../../../conectivity_module/conectivity_export.dart';
+import '../../../../core/conectivity_module/conectivity_export.dart';
 
 part 'home_event.dart';
 part 'home_state.dart';

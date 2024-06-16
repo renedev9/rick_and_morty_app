@@ -3,9 +3,10 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:rick_and_morty_app/modules/conectivity_module/presentation/bloc/conectivity_bloc.dart';
+import 'package:rick_and_morty_app/core/conectivity_module/bloc/conectivity_bloc.dart';
 import 'package:rick_and_morty_app/modules/home_module/presentation/bloc/home_bloc.dart';
 
+import '../../../../shared/shared_export.dart';
 import '../../domain/models/models_export.dart';
 import '../widgets/widgets_export.dart';
 
@@ -63,19 +64,7 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    //final blocConectivity = context.watch<ConectivityBloc>();
-    /*  if(stateConect.state is ConnectivityConnected){
-    ScaffoldMessenger.of(context).clearSnackBars();
-  }
-  if(stateConect.state is ConnectivityDisconnected){
-    final snackBar = SnackBar(
-              content: Text(
-                  'Se ha perdido la conexion, se trabajara con datos locales'),
-              duration: Duration(milliseconds: 2000),
-            );
-            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-            context.read<HomeBloc>().add(const LoadCharactersEvent());
-  } */
+    
     return BlocConsumer<HomeBloc, HomeState>(
       listener: (context, state) {
         if (state is HomeStandardState) {
@@ -83,7 +72,7 @@ class _HomeViewState extends State<HomeView> {
             setState(() {
               cancelScroll=true;
             });
-           const snackbar=SnackBar(content: Text('You lost connection, crazy human'),duration: Duration(milliseconds: 2000),);
+           const snackbar=SnackBar(content: Text('You lost connection, crazy human'),duration: Duration(milliseconds: 2000),backgroundColor: Colors.black,);
             ScaffoldMessenger.of(context).showSnackBar(snackbar);
           }
           if(state.connectionState==ConectivityValue.Connected){
@@ -91,47 +80,12 @@ class _HomeViewState extends State<HomeView> {
 
              setState(() {
               cancelScroll=false;
-               const snackbar=SnackBar(content: Text('Morty came back, he came back'),duration: Duration(milliseconds: 2000),);
+               const snackbar=SnackBar(content: Text('Morty came back, he came back'),duration: Duration(milliseconds: 2000),backgroundColor: Colors.black,);
                ScaffoldMessenger.of(context).showSnackBar(snackbar);
             });
             }
           }
-          /* if (state.connectionState == 'Disconnected') {
-            setState(() {
-              bottomScroll = false;
-              activeFilterScroll = false;
-              cancelScroll = false;
-            });
-            final snackBar = SnackBar(
-              content: Text(
-                  'Se ha perdido la conexion, se trabajara con datos locales'),
-              duration: Duration(milliseconds: 2000),
-            );
-            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-            context.read<HomeBloc>().add(const LoadCharactersEvent());
-          }
-          if (state.connectionState == 'Connected') {
-            setState(() {
-              bottomScroll = false;
-              activeFilterScroll = false;
-              cancelScroll = false;
-            });
-            final snackBar = SnackBar(
-              content: Text(
-                  'Se ha perdido la conexion, se trabajara con datos locales'),
-              duration: Duration(milliseconds: 2000),
-            );
-            ScaffoldMessenger.of(context).clearSnackBars();
-           
-          } */
-          /* setState(() {
-            activeFilterScroll=state.activeFilter!;
-          }); */
-          /* if(state.loading==false && state.characterList.results.isNotEmpty){
-         setState(() {
-           lista=state.characterList.results;
-         });
-        }  */
+          
           if (bottomScroll == true && state.loading == false) {
             _scrollController.animateTo(_scrollController.position.pixels + 100,
                 curve: Curves.fastOutSlowIn,
@@ -148,52 +102,13 @@ class _HomeViewState extends State<HomeView> {
             });
           }
          
-          /* 
-        
-          if(state.currentPaginate>state.pages){
-            setState(() {
-              bottomScroll=false;
-              activeFilterScroll=false;
-            });
-          } */
         }
       },
       builder: (context, state) {
         if (state is HomeStandardState && (state.connectionState==ConectivityValue.Disconnected)) {
           if(state.characterList.results.isNotEmpty){
             characters=state.characterList.results;
-          return Scaffold(
-            body: SafeArea(
-              child: Stack(children: [
-                Padding(
-                  padding:
-                      EdgeInsets.only(bottom: bottomScroll == false ? 0 : 40),
-                  child: ListView.builder(
-                      controller: _scrollController,
-                      itemCount: characters.length,
-                      itemBuilder: (context, index) {
-                        CharacterModel character = characters[index];
-                        return CharacterListTite(character: character);
-                      }),
-                ),
-                Column(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _cargarData(),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    )
-                  ],
-                ),
-              ]),
-            ),
-          );
+          return listCharacterWidget(context,false); 
           }else{
             return const Scaffold(body: Center(child:Text('You lost connection, crazy human',textAlign: TextAlign.center,)),);
           }
@@ -201,11 +116,7 @@ class _HomeViewState extends State<HomeView> {
         if (state is HomeStandardState &&
             state.loading &&
             bottomScroll == false) {
-          return const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
+          return const RickLoadingPage();
         }
         if (state is HomeStandardState && state.characterList.results.isEmpty) {
           return const Scaffold(
@@ -225,67 +136,7 @@ class _HomeViewState extends State<HomeView> {
               (state.currentPaginate <= state.pages)) {
             characters = state.characterList.results;
           }
-          return Scaffold(
-            body: SafeArea(
-              child: Stack(children: [
-                Padding(
-                  padding:
-                      EdgeInsets.only(bottom: bottomScroll == false ? 0 : 40),
-                  child: ListView.builder(
-                      controller: _scrollController,
-                      itemCount: characters.length,
-                      itemBuilder: (context, index) {
-                        CharacterModel character = characters[index];
-                        return CharacterListTite(character: character);
-                      }),
-                ),
-                Column(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _cargarData(),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    )
-                  ],
-                ),
-              ]),
-            ),
-            floatingActionButton: FloatingActionButton(
-                child: const Icon(Icons.filter_alt_outlined),
-                onPressed: () {
-                  //log('Se va a filtrar la pagina ==> $pageToPaginate');
-                  setState(() {
-                    activeFilterScroll = true;
-                  });
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      return FilterAlertDialog(
-                        dialogContext: context,
-                        clearFunction: () {
-                          context.pop();
-                          context.read<HomeBloc>().add(
-                              const ClearCharactersEvent(clearEvent: true));
-                          context
-                              .read<HomeBloc>()
-                              .add(const LoadCharactersEvent());
-                          setState(() {
-                            cancelScroll = false;
-                            activeFilterScroll = false;
-                          });
-                        },
-                      );
-                    },
-                  );
-                  //context.read<HomeBloc>().add(FilterCharactersEvent(name: 'Rick',status: 'alive'));
-                }),
-          );
+          return listCharacterWidget(context,true);
         } else {
           return Container();
         }
@@ -293,10 +144,82 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
+  Scaffold listCharacterWidget(BuildContext context,bool activeFloatingButton) {
+    return Scaffold(
+          body: SafeArea(
+            child: Stack(children: [
+              Padding(
+                padding:
+                    EdgeInsets.only(bottom: bottomScroll == false ? 0 : 40),
+                child: ListView.builder(
+                  controller: _scrollController,
+                    itemCount: characters.length,
+                    itemBuilder: (context, index) {
+                      CharacterModel character = characters[index];
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: CharacterListTite(character: character),
+                      );
+                    }),
+              ),
+              Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _cargarData(),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  )
+                ],
+              ),
+            ]),
+          ),
+          floatingActionButton: activeFloatingButton==false?null:FloatingActionButton(
+            elevation: 20,
+            backgroundColor: Colors.white,
+              child: const Icon(Icons.filter_alt,color: Colors.black,),
+              onPressed: () {
+                //log('Se va a filtrar la pagina ==> $pageToPaginate');
+                setState(() {
+                  activeFilterScroll = true;
+                });
+                showDialog(
+                  context: context,
+                  barrierColor: const Color.fromARGB(168, 0, 0, 0),
+                  builder: (context) {
+                    return FilterAlertDialog(
+                      dialogContext: context,
+                      clearFunction: () {
+                        context.pop();
+                        context.read<HomeBloc>().add(
+                            const ClearCharactersEvent(clearEvent: true));
+                        context
+                            .read<HomeBloc>()
+                            .add(const LoadCharactersEvent());
+                        setState(() {
+                          cancelScroll = false;
+                          activeFilterScroll = false;
+                        });
+                      },
+                    );
+                  },
+                );
+                //context.read<HomeBloc>().add(FilterCharactersEvent(name: 'Rick',status: 'alive'));
+              }),
+        );
+  }
+
   Widget _cargarData() {
     if (bottomScroll == true) {
-      return const CircularProgressIndicator();
+      return const CircularProgressIndicator(color: Colors.black,strokeWidth: 4,);
     }
     return Container();
   }
 }
+
+

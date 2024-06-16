@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:go_router/go_router.dart';
+import 'package:rick_and_morty_app/modules/home_module/domain/models/characters_model.dart';
 
 import '../../modules/home_module/presentation/views/views_export.dart';
 
@@ -23,7 +26,8 @@ GoRoute(
   path: '/details/:detail',
   name: DetailsView.name,
   builder: (context, state) {
-    return  DetailsView(detail: state.pathParameters['details']);
+    CharacterModel characterModel=CharacterModel.fromJson(json.decode( state.pathParameters['detail']!));
+    return  DetailsView(character: characterModel);
   },
   ),
 

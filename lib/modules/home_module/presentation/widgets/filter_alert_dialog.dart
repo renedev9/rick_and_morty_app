@@ -9,7 +9,8 @@ class FilterAlertDialog extends StatefulWidget {
   final void Function() clearFunction;
   const FilterAlertDialog({
     super.key,
-    required this.dialogContext, required this.clearFunction,
+    required this.dialogContext,
+    required this.clearFunction,
   });
 
   @override
@@ -17,6 +18,7 @@ class FilterAlertDialog extends StatefulWidget {
 }
 
 class _FilterAlertDialogState extends State<FilterAlertDialog> {
+  FocusNode myFocusNode = FocusNode();
   String selectedStatus = 'None';
   String selectedSpecies = 'None';
   String selectedGender = 'None';
@@ -24,92 +26,143 @@ class _FilterAlertDialogState extends State<FilterAlertDialog> {
   bool showStatus = false;
   bool showSpecies = false;
   bool showGender = false;
+  bool showName = false;
+  @override
+  void initState() {
+    super.initState();
+    myFocusNode.addListener(() {
+      if (myFocusNode.hasFocus) {
+      } else {}
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Size size = MediaQuery.of(context).size;
+    String title = showName
+        ? 'Oh, a name?'
+        : showGender
+            ? 'Oh a gender?'
+            : showSpecies
+                ? 'Oh, you\'re looking for some race'
+                : showStatus
+                    ? ' I\'m alive don\'t look for another state'
+                    : 'You\'re looking for something';
     return Builder(
       builder: (dialogContext) {
         return AlertDialog(
           scrollable: true,
-          title: Text('Filter'),
+          title: Center(
+              child: Text(
+            title,
+            textAlign: TextAlign.center,
+          )),
+          backgroundColor: Colors.white,
           content: showStatus == true
               ? _buildStatusList()
               : showSpecies == true
                   ? _buildSpeciesList()
                   : showGender == true
                       ? _buildGenderList()
-                      : Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            TextFormField(
-                              controller: controller,
-                              decoration: InputDecoration(
-                                  label: Text('Name: '),
-                                  border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(50))),
-                            ),
-                            Row(
+                      : showName == true
+                          ? _buildShowForm(myFocusNode)
+                          : Column(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text('Status: '),
-                                TextButton(
-                                    onPressed: () {
+                                RowFormWidget(
+                                  textLeading: 'Name: ',
+                                  function: () {
+                                    setState(() {
+                                      showName = true;
+                                    });
+                                  },
+                                  textForm: controller.text.isEmpty
+                                      ? 'None'
+                                      : controller.text,
+                                ),
+                                RowFormWidget(
+                                    textLeading: 'Status: ',
+                                    function: () {
                                       setState(() {
                                         showStatus = true;
                                       });
                                     },
-                                    child: Text(selectedStatus))
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Text('Species: '),
-                                TextButton(
-                                    onPressed: () {
+                                    textForm: selectedStatus),
+                                RowFormWidget(
+                                    textLeading: 'Species: ',
+                                    function: () {
                                       setState(() {
                                         showSpecies = true;
                                       });
                                     },
-                                    child: Text(selectedSpecies))
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Text('Gender: '),
-                                TextButton(
-                                    onPressed: () {
+                                    textForm: selectedSpecies),
+                                RowFormWidget(
+                                    textLeading: 'Gender: ',
+                                    function: () {
                                       setState(() {
                                         showGender = true;
                                       });
                                     },
-                                    child: Text(selectedGender))
+                                    textForm: selectedGender),
                               ],
-                            )
-                          ],
-                        ),
+                            ),
           actionsAlignment: MainAxisAlignment.center,
-          actions: [
-            TextButton(
+          actions: showName == true
+              ? [
+                  DynamicButton(
+                    text: 'Ok',
+                    dynamicFunction: () {
+                      setState(() {
+                        showName = false;
+                      });
+                    },
+                  ),
+                ]
+              : [
+                  AcceptButton(
+                    acceptFunction: () {
+                      if (controller.text.isNotEmpty ||
+                          selectedStatus != 'None' ||
+                          selectedGender != 'None' ||
+                          selectedSpecies != 'None') {
+                        context.read<HomeBloc>().add(FilterCharactersEvent(
+                            name: controller.text.replaceAll(' ', ''),
+                            status: selectedStatus.replaceAll('None', ''),
+                            gender: selectedGender.replaceAll('None', ''),
+                            species: selectedSpecies.replaceAll('None', ''),
+                            initialPaginate: true));
+                      }
+                      context.pop();
+                    },
+                  ),
+                  /* TextButton(
                 onPressed: () {
-                  if(controller.text.isNotEmpty|| selectedStatus!='None'||selectedGender!='None'||selectedSpecies!='None'){
-                  
-                  context.read<HomeBloc>().add(FilterCharactersEvent(
-                      name: controller.text.replaceAll(' ', ''), 
-                      status: selectedStatus.replaceAll('None', ''),
-                      gender: selectedGender.replaceAll('None', ''),
-                      species: selectedSpecies.replaceAll('None', ''),
-                      initialPaginate: true
-                      ));
+                  if (controller.text.isNotEmpty ||
+                      selectedStatus != 'None' ||
+                      selectedGender != 'None' ||
+                      selectedSpecies != 'None') {
+                    context.read<HomeBloc>().add(FilterCharactersEvent(
+                        name: controller.text.replaceAll(' ', ''),
+                        status: selectedStatus.replaceAll('None', ''),
+                        gender: selectedGender.replaceAll('None', ''),
+                        species: selectedSpecies.replaceAll('None', ''),
+                        initialPaginate: true));
                   }
                   context.pop();
                 },
-                child: Text('ACCEPT')),
-            TextButton(
-                onPressed: widget.clearFunction
-                /* () {
+                child: Text('ACCEPT')), */
+                  ClearButton(
+                    clearFunction: widget.clearFunction,
+                  ),
+                  /* TextButton(
+                      onPressed: widget.clearFunction
+                      /* () {
                   context.pop();
                   context.read<HomeBloc>().add(const LoadCharactersEvent());
-                } */,
-                child: Text('CLEAR'))
-          ],
+                } */
+                      ,
+                      child: Text('CLEAR')) */
+                ],
         );
       },
     );
@@ -123,6 +176,7 @@ class _FilterAlertDialogState extends State<FilterAlertDialog> {
         switch (index) {
           case 0:
             return RadioListTile<String>(
+              activeColor: Colors.black,
               title: Text("None"),
               value: "None",
               groupValue: selectedStatus,
@@ -135,7 +189,8 @@ class _FilterAlertDialogState extends State<FilterAlertDialog> {
             );
           case 1:
             return RadioListTile<String>(
-              title: Text("Alive"),
+              activeColor: Colors.black,
+              title: Text("Alive",style: TextStyle(fontWeight: selectedStatus=='Alive'?FontWeight.bold:FontWeight.normal),),
               value: "Alive",
               groupValue: selectedStatus,
               onChanged: (String? value) {
@@ -147,7 +202,8 @@ class _FilterAlertDialogState extends State<FilterAlertDialog> {
             );
           case 2:
             return RadioListTile<String>(
-              title: Text("Dead"),
+              activeColor: Colors.black,
+              title: Text("Dead",style: TextStyle(fontWeight: selectedStatus=='Dead'?FontWeight.bold:FontWeight.normal),),
               value: "Dead",
               groupValue: selectedStatus,
               onChanged: (String? value) {
@@ -159,7 +215,8 @@ class _FilterAlertDialogState extends State<FilterAlertDialog> {
             );
           case 3:
             return RadioListTile<String>(
-              title: Text("Unknown"),
+              activeColor: Colors.black,
+              title: Text("Unknown",style: TextStyle(fontWeight: selectedStatus=='Unknown'?FontWeight.bold:FontWeight.normal),),
               value: "Unknown",
               groupValue: selectedStatus,
               onChanged: (String? value) {
@@ -182,9 +239,10 @@ class _FilterAlertDialogState extends State<FilterAlertDialog> {
       itemCount: 4,
       itemBuilder: (BuildContext context, int index) {
         switch (index) {
-           case 0:
+          case 0:
             return RadioListTile<String>(
-              title: Text("None"),
+              activeColor: Colors.black,
+              title: Text("None",style: TextStyle(fontWeight: selectedSpecies=='None'?FontWeight.bold:FontWeight.normal),),
               value: "None",
               groupValue: selectedSpecies,
               onChanged: (String? value) {
@@ -196,7 +254,8 @@ class _FilterAlertDialogState extends State<FilterAlertDialog> {
             );
           case 1:
             return RadioListTile<String>(
-              title: Text("Humanoid"),
+              activeColor: Colors.black,
+              title: Text("Humanoid",style: TextStyle(fontWeight: selectedSpecies=='Humanoid'?FontWeight.bold:FontWeight.normal),),
               value: "Humanoid",
               groupValue: selectedSpecies,
               onChanged: (String? value) {
@@ -206,10 +265,11 @@ class _FilterAlertDialogState extends State<FilterAlertDialog> {
                 });
               },
             );
-            
+
           case 2:
             return RadioListTile<String>(
-              title: Text("Human"),
+              activeColor: Colors.black,
+              title: Text("Human",style: TextStyle(fontWeight: selectedSpecies=='Human'?FontWeight.bold:FontWeight.normal)),
               value: "Human",
               groupValue: selectedSpecies,
               onChanged: (String? value) {
@@ -221,7 +281,8 @@ class _FilterAlertDialogState extends State<FilterAlertDialog> {
             );
           case 3:
             return RadioListTile<String>(
-              title: Text("Alien"),
+              activeColor: Colors.black,
+              title: Text("Alien",style: TextStyle(fontWeight: selectedSpecies=='Alien'?FontWeight.bold:FontWeight.normal)),
               value: "Alien",
               groupValue: selectedSpecies,
               onChanged: (String? value) {
@@ -246,7 +307,8 @@ class _FilterAlertDialogState extends State<FilterAlertDialog> {
         switch (index) {
           case 0:
             return RadioListTile<String>(
-              title: Text("None"),
+              activeColor: Colors.black,
+              title: Text("None",style: TextStyle(fontWeight: selectedGender=='None'?FontWeight.bold:FontWeight.normal)),
               value: "None",
               groupValue: selectedGender,
               onChanged: (String? value) {
@@ -258,7 +320,8 @@ class _FilterAlertDialogState extends State<FilterAlertDialog> {
             );
           case 1:
             return RadioListTile<String>(
-              title: Text("Female"),
+              activeColor: Colors.black,
+              title: Text("Female",style: TextStyle(fontWeight: selectedGender=='Female'?FontWeight.bold:FontWeight.normal)),
               value: "Female",
               groupValue: selectedGender,
               onChanged: (String? value) {
@@ -270,7 +333,8 @@ class _FilterAlertDialogState extends State<FilterAlertDialog> {
             );
           case 2:
             return RadioListTile<String>(
-              title: Text("Male"),
+              activeColor: Colors.black,
+              title: Text("Male",style: TextStyle(fontWeight: selectedGender=='Male'?FontWeight.bold:FontWeight.normal)),
               value: "Male",
               groupValue: selectedGender,
               onChanged: (String? value) {
@@ -282,7 +346,8 @@ class _FilterAlertDialogState extends State<FilterAlertDialog> {
             );
           case 3:
             return RadioListTile<String>(
-              title: Text("Genderless"),
+              activeColor: Colors.black,
+              title: Text("Genderless",style: TextStyle(fontWeight: selectedGender=='Genderless'?FontWeight.bold:FontWeight.normal)),
               value: "Genderless",
               groupValue: selectedGender,
               onChanged: (String? value) {
@@ -296,6 +361,129 @@ class _FilterAlertDialogState extends State<FilterAlertDialog> {
             return SizedBox.shrink();
         }
       },
+    );
+  }
+
+  Widget _buildShowForm(FocusNode focusNode) {
+    return TextFormField(
+        focusNode: focusNode,
+        controller: controller,
+        decoration: InputDecoration(
+          focusedBorder:
+              OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+          enabledBorder:
+              OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+        ));
+  }
+}
+
+class RowFormWidget extends StatefulWidget {
+  final String textLeading;
+  final void Function()? function;
+  final String textForm;
+  const RowFormWidget(
+      {super.key,
+      required this.textLeading,
+      this.function,
+      required this.textForm});
+
+  @override
+  State<RowFormWidget> createState() => _RowFormWidgetState();
+}
+
+class _RowFormWidgetState extends State<RowFormWidget> {
+  @override
+  Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    return Row(
+      children: [
+        Text(
+          widget.textLeading,
+          style: TextStyle(fontStyle: FontStyle.italic),
+        ),
+        SizedBox(
+          width: size.width / 20,
+        ),
+        TextButton(
+            onPressed: widget.function,
+            style: TextButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                    side: BorderSide(
+                      color: Colors.black,
+                    ),
+                    borderRadius: BorderRadius.circular(10))),
+            child: Text(
+              widget.textForm,
+              style: TextStyle(
+                  color: widget.textForm == 'None' ? Colors.grey : Colors.black,
+                  fontWeight: FontWeight.bold),
+            ))
+      ],
+    );
+  }
+}
+
+class AcceptButton extends StatelessWidget {
+  final void Function()? acceptFunction;
+  const AcceptButton({super.key, this.acceptFunction});
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: acceptFunction,
+      child: Text(
+        'Accept',
+        style: TextStyle(color: Colors.black),
+      ),
+      style: ElevatedButton.styleFrom(
+          elevation: 5,
+          shape: RoundedRectangleBorder(
+              side: BorderSide(color: Colors.black),
+              borderRadius: BorderRadius.circular(10))),
+    );
+  }
+}
+
+class ClearButton extends StatelessWidget {
+  final void Function()? clearFunction;
+  const ClearButton({super.key, this.clearFunction});
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: clearFunction,
+      child: Text(
+        'Clear',
+        style: TextStyle(color: Colors.white),
+      ),
+      style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.grey,
+          elevation: 5,
+          shape: RoundedRectangleBorder(
+              side: BorderSide(color: Colors.white),
+              borderRadius: BorderRadius.circular(10))),
+    );
+  }
+}
+
+class DynamicButton extends StatelessWidget {
+  final String text;
+  final void Function()? dynamicFunction;
+  const DynamicButton({super.key, this.dynamicFunction, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: dynamicFunction,
+      child: Text(
+        text,
+        style: TextStyle(color: Colors.black),
+      ),
+      style: ElevatedButton.styleFrom(
+          elevation: 5,
+          shape: RoundedRectangleBorder(
+              side: BorderSide(color: Colors.black),
+              borderRadius: BorderRadius.circular(10))),
     );
   }
 }
