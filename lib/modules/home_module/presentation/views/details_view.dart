@@ -251,7 +251,7 @@ class _RichtTextInfoCharacter extends StatelessWidget {
   Widget build(BuildContext context) {
     return RichText(
       text: TextSpan(style: TextStyle(color: Colors.black), children: [
-        TextSpan(text: text//'Status : '
+        TextSpan(text: initialText//'Status : '
         ),
         TextSpan(
             text: text,//character.status.name.toUpperCase(),
