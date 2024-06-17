@@ -2,9 +2,9 @@ import 'package:dartz/dartz.dart';
 
 import 'package:rick_and_morty_app/core/errors/failure.dart';
 
-import '../../datasources/datasource_export.dart';
-import '../../../domain/models/models_export.dart';
-import '../../../domain/repository/reposity_export.dart';
+import '../datasources/datasource_export.dart';
+import '../../domain/models/models_export.dart';
+import '../../domain/repository/reposity_export.dart';
 
 class CharacterRepositoryImpl implements RemoteCharacterRepository {
   final RemoteDataSource remoteDataSource;
