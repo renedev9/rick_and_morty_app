@@ -58,7 +58,7 @@ class _CustomMaterialRouterState extends State<CustomMaterialRouter> {
       debugShowCheckedModeBanner: false,
       darkTheme: AppTheme().darkTheme(),
       theme: AppTheme().lightTheme(),
-      themeMode: ThemeMode.dark,
+      themeMode: ThemeMode.system,
       routerConfig: appRouter,
     );
   }
