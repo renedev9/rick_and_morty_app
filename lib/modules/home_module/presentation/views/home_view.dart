@@ -127,9 +127,11 @@ class _HomeViewState extends State<HomeView> {
             },), */
               );
         } else if (state is HomeStandardState) {
+         
           if (state.currentPaginate > 1 &&
               state.loading == false &&
               (state.currentPaginate <= state.pages)) {
+                 //! Revisar esto, cuando se pierde la conexion y se recupera al instante, y se esta filtrando, se pierde la lista, error de concurrencia
             characters.addAll(state.characterList.results);
           } else if (state.currentPaginate <= 1 &&
               state.loading == false &&
@@ -180,6 +182,7 @@ class _HomeViewState extends State<HomeView> {
             ]),
           ),
           floatingActionButton: activeFloatingButton==false?null:FloatingActionButton(
+            shape: RoundedRectangleBorder(side: BorderSide(color: Colors.black,width: 1,),borderRadius: BorderRadius.circular(10)),
             elevation: 20,
             backgroundColor: Colors.white,
               child: const Icon(Icons.filter_alt,color: Colors.black,),
