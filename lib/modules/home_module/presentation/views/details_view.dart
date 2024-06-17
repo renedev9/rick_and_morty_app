@@ -17,6 +17,7 @@ class _DetailsViewState extends State<DetailsView> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    
     Color colorByStatus = widget.character.status.name == 'DEAD'
         ? Colors.red.shade100
         : widget.character.status.name != 'ALIVE'
@@ -35,7 +36,7 @@ class _DetailsViewState extends State<DetailsView> {
               onPressed: () {
                 context.pop();
               },
-              icon: const Icon(Icons.arrow_back_ios)),
+              icon:  Icon(Icons.arrow_back_ios,color: Colors.black,)),
           title: const Text(
             'Character detail',
             style: TextStyle(color: Colors.black),

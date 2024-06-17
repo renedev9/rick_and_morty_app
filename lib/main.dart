@@ -17,9 +17,10 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    final ColorScheme colors = Theme.of(context).colorScheme;
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark));
+        statusBarIconBrightness: colors.primary==Colors.white?Brightness.light:Brightness.dark));
     
     return MultiBlocProvider(
       providers: [
@@ -31,13 +32,34 @@ class MyApp extends StatelessWidget {
         ),
         
       ],
-      child: MaterialApp.router(
-        debugShowCheckedModeBanner: false,
-        darkTheme: AppTheme().darkTheme(),
-        theme: AppTheme().lightTheme(),
-        themeMode: ThemeMode.system,
-        routerConfig: appRouter,
-      ),
+      child: const CustomMaterialRouter(),
+    );
+  }
+}
+
+class CustomMaterialRouter extends StatefulWidget {
+  const CustomMaterialRouter({
+    super.key,
+  });
+
+  @override
+  State<CustomMaterialRouter> createState() => _CustomMaterialRouterState();
+}
+
+class _CustomMaterialRouterState extends State<CustomMaterialRouter> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
+      darkTheme: AppTheme().darkTheme(),
+      theme: AppTheme().lightTheme(),
+      themeMode: ThemeMode.dark,
+      routerConfig: appRouter,
     );
   }
 }

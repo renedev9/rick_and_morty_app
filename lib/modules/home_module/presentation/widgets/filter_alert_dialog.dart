@@ -39,6 +39,7 @@ class _FilterAlertDialogState extends State<FilterAlertDialog> {
   @override
   Widget build(BuildContext context) {
     // Size size = MediaQuery.of(context).size;
+    final ColorScheme colors = Theme.of(context).colorScheme;
     String title = showName
         ? 'Oh, a name?'
         : showGender
@@ -57,7 +58,7 @@ class _FilterAlertDialogState extends State<FilterAlertDialog> {
             title,
             textAlign: TextAlign.center,
           )),
-          backgroundColor: Colors.white,
+          backgroundColor: colors.primary,
           content: showStatus == true
               ? _buildStatusList()
               : showSpecies == true
@@ -169,6 +170,7 @@ class _FilterAlertDialogState extends State<FilterAlertDialog> {
   }
 
   Widget _buildStatusList() {
+    final ColorScheme colors = Theme.of(context).colorScheme;
     return ListView.builder(
       shrinkWrap: true,
       itemCount: 4,
@@ -176,7 +178,7 @@ class _FilterAlertDialogState extends State<FilterAlertDialog> {
         switch (index) {
           case 0:
             return RadioListTile<String>(
-              activeColor: Colors.black,
+              activeColor: colors.secondary,
               title: Text("None"),
               value: "None",
               groupValue: selectedStatus,
@@ -189,7 +191,7 @@ class _FilterAlertDialogState extends State<FilterAlertDialog> {
             );
           case 1:
             return RadioListTile<String>(
-              activeColor: Colors.black,
+              activeColor: colors.secondary,
               title: Text("Alive",style: TextStyle(fontWeight: selectedStatus=='Alive'?FontWeight.bold:FontWeight.normal),),
               value: "Alive",
               groupValue: selectedStatus,
@@ -202,7 +204,7 @@ class _FilterAlertDialogState extends State<FilterAlertDialog> {
             );
           case 2:
             return RadioListTile<String>(
-              activeColor: Colors.black,
+              activeColor: colors.secondary,
               title: Text("Dead",style: TextStyle(fontWeight: selectedStatus=='Dead'?FontWeight.bold:FontWeight.normal),),
               value: "Dead",
               groupValue: selectedStatus,
@@ -215,7 +217,7 @@ class _FilterAlertDialogState extends State<FilterAlertDialog> {
             );
           case 3:
             return RadioListTile<String>(
-              activeColor: Colors.black,
+              activeColor: colors.secondary,
               title: Text("Unknown",style: TextStyle(fontWeight: selectedStatus=='Unknown'?FontWeight.bold:FontWeight.normal),),
               value: "Unknown",
               groupValue: selectedStatus,
@@ -234,6 +236,7 @@ class _FilterAlertDialogState extends State<FilterAlertDialog> {
   }
 
   Widget _buildSpeciesList() {
+    final ColorScheme colors = Theme.of(context).colorScheme;
     return ListView.builder(
       shrinkWrap: true,
       itemCount: 4,
@@ -241,7 +244,7 @@ class _FilterAlertDialogState extends State<FilterAlertDialog> {
         switch (index) {
           case 0:
             return RadioListTile<String>(
-              activeColor: Colors.black,
+              activeColor: colors.secondary,
               title: Text("None",style: TextStyle(fontWeight: selectedSpecies=='None'?FontWeight.bold:FontWeight.normal),),
               value: "None",
               groupValue: selectedSpecies,
@@ -254,7 +257,7 @@ class _FilterAlertDialogState extends State<FilterAlertDialog> {
             );
           case 1:
             return RadioListTile<String>(
-              activeColor: Colors.black,
+              activeColor: colors.secondary,
               title: Text("Humanoid",style: TextStyle(fontWeight: selectedSpecies=='Humanoid'?FontWeight.bold:FontWeight.normal),),
               value: "Humanoid",
               groupValue: selectedSpecies,
@@ -268,7 +271,7 @@ class _FilterAlertDialogState extends State<FilterAlertDialog> {
 
           case 2:
             return RadioListTile<String>(
-              activeColor: Colors.black,
+              activeColor: colors.secondary,
               title: Text("Human",style: TextStyle(fontWeight: selectedSpecies=='Human'?FontWeight.bold:FontWeight.normal)),
               value: "Human",
               groupValue: selectedSpecies,
@@ -281,7 +284,7 @@ class _FilterAlertDialogState extends State<FilterAlertDialog> {
             );
           case 3:
             return RadioListTile<String>(
-              activeColor: Colors.black,
+              activeColor: colors.secondary,
               title: Text("Alien",style: TextStyle(fontWeight: selectedSpecies=='Alien'?FontWeight.bold:FontWeight.normal)),
               value: "Alien",
               groupValue: selectedSpecies,
@@ -300,6 +303,7 @@ class _FilterAlertDialogState extends State<FilterAlertDialog> {
   }
 
   Widget _buildGenderList() {
+    final ColorScheme colors = Theme.of(context).colorScheme;
     return ListView.builder(
       shrinkWrap: true,
       itemCount: 4,
@@ -307,7 +311,7 @@ class _FilterAlertDialogState extends State<FilterAlertDialog> {
         switch (index) {
           case 0:
             return RadioListTile<String>(
-              activeColor: Colors.black,
+              activeColor: colors.secondary,
               title: Text("None",style: TextStyle(fontWeight: selectedGender=='None'?FontWeight.bold:FontWeight.normal)),
               value: "None",
               groupValue: selectedGender,
@@ -320,7 +324,7 @@ class _FilterAlertDialogState extends State<FilterAlertDialog> {
             );
           case 1:
             return RadioListTile<String>(
-              activeColor: Colors.black,
+              activeColor: colors.secondary,
               title: Text("Female",style: TextStyle(fontWeight: selectedGender=='Female'?FontWeight.bold:FontWeight.normal)),
               value: "Female",
               groupValue: selectedGender,
@@ -333,7 +337,7 @@ class _FilterAlertDialogState extends State<FilterAlertDialog> {
             );
           case 2:
             return RadioListTile<String>(
-              activeColor: Colors.black,
+              activeColor:  colors.secondary,
               title: Text("Male",style: TextStyle(fontWeight: selectedGender=='Male'?FontWeight.bold:FontWeight.normal)),
               value: "Male",
               groupValue: selectedGender,
@@ -346,7 +350,7 @@ class _FilterAlertDialogState extends State<FilterAlertDialog> {
             );
           case 3:
             return RadioListTile<String>(
-              activeColor: Colors.black,
+              activeColor:  colors.secondary,
               title: Text("Genderless",style: TextStyle(fontWeight: selectedGender=='Genderless'?FontWeight.bold:FontWeight.normal)),
               value: "Genderless",
               groupValue: selectedGender,
@@ -395,6 +399,7 @@ class _RowFormWidgetState extends State<RowFormWidget> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    final ColorScheme colors = Theme.of(context).colorScheme;
     return Row(
       children: [
         Text(
@@ -409,13 +414,13 @@ class _RowFormWidgetState extends State<RowFormWidget> {
             style: TextButton.styleFrom(
                 shape: RoundedRectangleBorder(
                     side: BorderSide(
-                      color: Colors.black,
+                      color: colors.secondary,
                     ),
                     borderRadius: BorderRadius.circular(10))),
             child: Text(
               widget.textForm,
               style: TextStyle(
-                  color: widget.textForm == 'None' ? Colors.grey : Colors.black,
+                  color: widget.textForm == 'None' ? Colors.grey : colors.secondary,
                   fontWeight: FontWeight.bold),
             ))
       ],
@@ -429,16 +434,17 @@ class AcceptButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme colors = Theme.of(context).colorScheme;
     return ElevatedButton(
       onPressed: acceptFunction,
       child: Text(
         'Accept',
-        style: TextStyle(color: Colors.black),
+        style: TextStyle(color: colors.secondary),
       ),
       style: ElevatedButton.styleFrom(
           elevation: 5,
           shape: RoundedRectangleBorder(
-              side: BorderSide(color: Colors.black),
+              side: BorderSide(color: colors.secondary),
               borderRadius: BorderRadius.circular(10))),
     );
   }
@@ -473,16 +479,17 @@ class DynamicButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme colors = Theme.of(context).colorScheme;
     return ElevatedButton(
       onPressed: dynamicFunction,
       child: Text(
         text,
-        style: TextStyle(color: Colors.black),
+        style: TextStyle(color: colors.secondary),
       ),
       style: ElevatedButton.styleFrom(
           elevation: 5,
           shape: RoundedRectangleBorder(
-              side: BorderSide(color: Colors.black),
+              side: BorderSide(color: colors.secondary),
               borderRadius: BorderRadius.circular(10))),
     );
   }

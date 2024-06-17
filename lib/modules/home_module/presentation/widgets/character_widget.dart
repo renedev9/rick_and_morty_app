@@ -20,7 +20,8 @@ class CharacterListTite extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    log(character.image);
+    
+    final ColorScheme colors = Theme.of(context).colorScheme;
     Size size = MediaQuery.of(context).size;
     Color colorByStatus=character.status.name=='DEAD'?Colors.red.shade300: character.status.name!='ALIVE'?Colors.grey:Colors.green.shade300;
         Color colorByStatusText=character.status.name=='DEAD'?Colors.red: character.status.name!='ALIVE'?Colors.grey:Colors.green;
@@ -48,11 +49,11 @@ class CharacterListTite extends StatelessWidget {
           width: size.width / 2,
           child: Container(
               alignment: Alignment.bottomCenter,
-              decoration: const BoxDecoration(
+              decoration:  BoxDecoration(
                   gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: <Color>[Colors.transparent, Colors.white])),
+                      colors: <Color>[Colors.transparent, colors.primary])),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -71,9 +72,9 @@ class CharacterListTite extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                           fontStyle: FontStyle.italic),
                       children: [
-                    const TextSpan(text: 'Status : ',style: TextStyle(color: Colors.black)),
+                     TextSpan(text: 'Status : ',style: TextStyle(color: colors.secondary)),
                     TextSpan(text: '${character.status.name.toUpperCase()}  '),
-                    const TextSpan(text: 'Species : ',style: TextStyle(color: Colors.black)),
+                     TextSpan(text: 'Species : ',style: TextStyle(color: colors.secondary)),
                     TextSpan(text: character.species.name.toUpperCase()),
                   ]))
                  ,

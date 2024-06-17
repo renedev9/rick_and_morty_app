@@ -23,13 +23,24 @@ class _SplashViewState extends State<SplashView> {
   }
   @override
   Widget build(BuildContext context) {
-   
+   final ColorScheme colors = Theme.of(context).colorScheme;
+    if(colors.primary==Colors.white){
+
     return Scaffold(
       extendBody: true,
       body: Center(child: ClipRRect(
-        borderRadius: BorderRadius.circular(100),
+        borderRadius: BorderRadius.circular(50),
         child: Image.asset('assets/splash_light.jpg',fit: BoxFit.cover,))),//_cargarGift(context),
     );
+    }else{
+      return Scaffold(
+      extendBody: true,
+      body: Center(child: ClipRRect(
+        borderRadius: BorderRadius.circular(50),
+        child: Image.asset('assets/splash_dark.jpeg',fit: BoxFit.cover,))),//_cargarGift(context),
+    );
+    }
+    
   }
 }
  _cargarGift(BuildContext context){

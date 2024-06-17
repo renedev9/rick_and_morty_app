@@ -7,8 +7,10 @@ class RickLoadingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Image(image: AssetImage('assets/tenor.gif'),fit: BoxFit.cover,)),
+    return  Scaffold(
+      body: Center(child: ClipRRect(
+        borderRadius: BorderRadius.circular(50),
+        child: Image(image: AssetImage('assets/tenor.gif'),fit: BoxFit.cover,))),
     );
   }
 }

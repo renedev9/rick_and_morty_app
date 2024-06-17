@@ -147,6 +147,7 @@ class _HomeViewState extends State<HomeView> {
   }
 
   Scaffold listCharacterWidget(BuildContext context,bool activeFloatingButton) {
+    final ColorScheme colors = Theme.of(context).colorScheme;
     return Scaffold(
           body: SafeArea(
             child: Stack(children: [
@@ -182,10 +183,10 @@ class _HomeViewState extends State<HomeView> {
             ]),
           ),
           floatingActionButton: activeFloatingButton==false?null:FloatingActionButton(
-            shape: RoundedRectangleBorder(side: BorderSide(color: Colors.black,width: 1,),borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(side: BorderSide(color: colors.secondary,width: 1,),borderRadius: BorderRadius.circular(10)),
             elevation: 20,
-            backgroundColor: Colors.white,
-              child: const Icon(Icons.filter_alt,color: Colors.black,),
+            backgroundColor: colors.primary,
+              child:  Icon(Icons.filter_alt,color: colors.secondary,),
               onPressed: () {
                 //log('Se va a filtrar la pagina ==> $pageToPaginate');
                 setState(() {
