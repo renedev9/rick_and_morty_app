@@ -18,15 +18,19 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  final ScrollController _scrollController = ScrollController();//* Control de scroll
+  final ScrollController _scrollController =
+      ScrollController(); //* Control de scroll
 
-  bool bottomScroll =false; //* Bandera para dibujar Progress Indicator al final del scroll
+  bool bottomScroll =
+      false; //* Bandera para dibujar Progress Indicator al final del scroll
 
-  bool activeFilterScroll =false; //*Filtro para controlar el cambio de la pagina
+  bool activeFilterScroll =
+      false; //*Filtro para controlar el cambio de la pagina
 
-  bool cancelScroll =false; //* bandera para cancelar el scroll en caso de que se pierda la conexion o llegue al final del paginado
-  
-  List<CharacterModel> characters = [];//* Control de listado de personajes
+  bool cancelScroll =
+      false; //* bandera para cancelar el scroll en caso de que se pierda la conexion o llegue al final del paginado
+
+  List<CharacterModel> characters = []; //* Control de listado de personajes
   
   @override
   void initState() {
@@ -41,12 +45,14 @@ class _HomeViewState extends State<HomeView> {
           setState(() {
             bottomScroll = true;
           });
+          //* Se lanza evento para filtrar solo cuando este activado el filtro
           if (activeFilterScroll) {
             context
                 .read<HomeBloc>()
                 .add(const FilterCharactersEvent(initialPaginate: false));
-            
-          } else if (bottomScroll == true) {
+          } 
+          //* Se chequea que se quiera seguir listando elementos cuando se llegue al final, y no sea durante el filtrado de personajes
+          else if (bottomScroll == true) {
             context
                 .read<HomeBloc>()
                 .add(const LoadCharactersEvent(activePagination: true));
@@ -64,28 +70,39 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    
+   
     return BlocConsumer<HomeBloc, HomeState>(
       listener: (context, state) {
         if (state is HomeStandardState) {
-           if(state.connectionState==ConectivityValue.Disconnected){
-            setState(() {
-              cancelScroll=true;
-            });
-           const snackbar=SnackBar(content: Text('You lost connection, crazy human'),duration: Duration(milliseconds: 2000),backgroundColor: Colors.black,);
+          
+          //*Accion cuando se pierde la conexion a internet
+          if (state.connectionState == ConectivityValue.Disconnected) {
+             const snackbar = SnackBar(
+              content: Text('You lost connection, crazy human'),
+              duration: Duration(milliseconds: 2000),
+              backgroundColor: Colors.black,
+            );
             ScaffoldMessenger.of(context).showSnackBar(snackbar);
-          }
-          if(state.connectionState==ConectivityValue.Connected){
-            if(cancelScroll==true){
-
-             setState(() {
-              cancelScroll=false;
-               const snackbar=SnackBar(content: Text('Morty came back, he came back'),duration: Duration(milliseconds: 2000),backgroundColor: Colors.black,);
-               ScaffoldMessenger.of(context).showSnackBar(snackbar);
+            setState(() {
+              cancelScroll = true;
             });
+           
+          }
+          //* Accion cuando se restablece la conexion a internet
+          if (state.connectionState == ConectivityValue.Connected) {
+            if (cancelScroll == true) {
+              const snackbar = SnackBar(
+                content: Text('Morty came back, he came back'),
+                duration: Duration(milliseconds: 2000),
+                backgroundColor: Colors.black,
+              );
+              ScaffoldMessenger.of(context).showSnackBar(snackbar);
+              setState(() {
+                cancelScroll = false;
+              });
             }
           }
-          
+          //* Animacion de scroll cuando llega al final, se cierra visibilidad de progress indicator
           if (bottomScroll == true && state.loading == false) {
             _scrollController.animateTo(_scrollController.position.pixels + 100,
                 curve: Curves.fastOutSlowIn,
@@ -101,18 +118,26 @@ class _HomeViewState extends State<HomeView> {
               cancelScroll = true;
             });
           }
-         
         }
       },
       builder: (context, state) {
-        if (state is HomeStandardState && (state.connectionState==ConectivityValue.Disconnected)) {
-          if(state.characterList.results.isNotEmpty){
-            characters=state.characterList.results;
-          return listCharacterWidget(context,false); 
-          }else{
-            return const Scaffold(body: Center(child:Text('You lost connection, crazy human',textAlign: TextAlign.center,)),);
+        if (state is HomeStandardState &&
+            (state.connectionState == ConectivityValue.Disconnected)) {
+          //* Se checkea cuando se pierda la conexion
+          if (state.characterList.results.isNotEmpty) {
+            characters = state.characterList.results;
+            return _buildCharactesWidget(context, false,characters.toSet().toList());
+          } else {
+            return const Scaffold(
+              body: Center(
+                  child: Text(
+                'You lost connection, crazy human',
+                textAlign: TextAlign.center,
+              )),
+            );
           }
         }
+        //* Pantalla de carga
         if (state is HomeStandardState &&
             state.loading &&
             bottomScroll == false) {
@@ -122,23 +147,25 @@ class _HomeViewState extends State<HomeView> {
           return const Scaffold(
               body: Center(
             child: Text('No hay personajes'),
-          ) /* ,floatingActionButton: FloatingActionButton(onPressed: (){
-              context.read<HomeBloc>().add(const LoadCharactersEvent(activeFilter: true));
-            },), */
+          )
               );
+              
         } else if (state is HomeStandardState) {
-         
           if (state.currentPaginate > 1 &&
               state.loading == false &&
               (state.currentPaginate <= state.pages)) {
-                 //! Revisar esto, cuando se pierde la conexion y se recupera al instante, y se esta filtrando, se pierde la lista, error de concurrencia
-            characters.addAll(state.characterList.results);
+                //*En este punto la lista de personajes debe tener valores
+              //* Se añaden elementos solo cuando se llegue al final del scroll y la pagina no es la primera y no exceda el el total de paginas
+            characters.addAll(state.characterList.results.toSet().toList());
+            
+           
           } else if (state.currentPaginate <= 1 &&
               state.loading == false &&
               (state.currentPaginate <= state.pages)) {
+                 //*Aqui se garantiza se este en la primera pagina
             characters = state.characterList.results;
           }
-          return listCharacterWidget(context,true);
+          return _buildCharactesWidget(context, true,characters.toSet().toList());
         } else {
           return Container();
         }
@@ -146,47 +173,58 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  Scaffold listCharacterWidget(BuildContext context,bool activeFloatingButton) {
+//* Metodo para dibujar el listado de personajes
+  Scaffold _buildCharactesWidget(
+      BuildContext context, bool activeFloatingButton,List<CharacterModel>characterList) {
     final ColorScheme colors = Theme.of(context).colorScheme;
     return Scaffold(
-          body: SafeArea(
-            child: Stack(children: [
-              Padding(
-                padding:
-                    EdgeInsets.only(bottom: bottomScroll == false ? 0 : 40),
-                child: ListView.builder(
-                  controller: _scrollController,
-                    itemCount: characters.length,
-                    itemBuilder: (context, index) {
-                      CharacterModel character = characters[index];
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: CharacterListTite(character: character),
-                      );
-                    }),
-              ),
-              Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.end,
+      body: SafeArea(
+        child: Stack(children: [
+          Padding(
+            padding: EdgeInsets.only(bottom: bottomScroll == false ? 0 : 40),
+            child: ListView.builder(
+                controller: _scrollController,
+                itemCount: characterList.length,
+                itemBuilder: (context, index) {
+                  CharacterModel character = characterList[index];
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CharacterListTite(character: character),
+                  );
+                }),
+          ),
+          Column(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _cargarData(),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  )
+                  _cargarData(),
                 ],
               ),
-            ]),
+              const SizedBox(
+                height: 20,
+              )
+            ],
           ),
-          floatingActionButton: activeFloatingButton==false?null:FloatingActionButton(
-            shape: RoundedRectangleBorder(side: BorderSide(color: colors.secondary,width: 1,),borderRadius: BorderRadius.circular(10)),
-            elevation: 20,
-            backgroundColor: colors.primary,
-              child:  Icon(Icons.filter_alt,color: colors.secondary,),
+        ]),
+      ),
+      floatingActionButton: activeFloatingButton == false
+          ? null
+          : FloatingActionButton(
+              shape: RoundedRectangleBorder(
+                  side: BorderSide(
+                    color: colors.secondary,
+                    width: 1,
+                  ),
+                  borderRadius: BorderRadius.circular(10)),
+              elevation: 20,
+              backgroundColor: colors.primary,
+              child: Icon(
+                Icons.filter_alt,
+                color: colors.secondary,
+              ),
               onPressed: () {
                 //log('Se va a filtrar la pagina ==> $pageToPaginate');
                 setState(() {
@@ -200,8 +238,9 @@ class _HomeViewState extends State<HomeView> {
                       dialogContext: context,
                       clearFunction: () {
                         context.pop();
-                        context.read<HomeBloc>().add(
-                            const ClearCharactersEvent(clearEvent: true));
+                        context
+                            .read<HomeBloc>()
+                            .add(const ClearCharactersEvent(clearEvent: true));
                         context
                             .read<HomeBloc>()
                             .add(const LoadCharactersEvent());
@@ -215,15 +254,18 @@ class _HomeViewState extends State<HomeView> {
                 );
                 //context.read<HomeBloc>().add(FilterCharactersEvent(name: 'Rick',status: 'alive'));
               }),
-        );
+    );
   }
-
+  
+  //* Metodo para dibujar la carga al final del scroll
   Widget _cargarData() {
+    final ColorScheme colors = Theme.of(context).colorScheme;
     if (bottomScroll == true) {
-      return const CircularProgressIndicator(color: Colors.black,strokeWidth: 4,);
+      return  CircularProgressIndicator(
+        color: colors.secondary,
+        strokeWidth: 4,
+      );
     }
     return Container();
   }
 }
-
-

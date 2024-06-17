@@ -17,17 +17,18 @@ class _DetailsViewState extends State<DetailsView> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    
+
     Color colorByStatus = widget.character.status.name == 'DEAD'
         ? Colors.red.shade100
         : widget.character.status.name != 'ALIVE'
             ? Colors.grey.shade100
-            : Colors.green.shade100;
+            : Colors.green.shade100; //*Estatus del color para el fondo
+
     Color colorByStatusText = widget.character.status.name == 'DEAD'
         ? Colors.red
         : widget.character.status.name != 'ALIVE'
             ? Colors.grey
-            : Colors.green;
+            : Colors.green; //* Estatus del color para textos
     return Scaffold(
         backgroundColor: colorByStatus,
         appBar: AppBar(
@@ -36,7 +37,10 @@ class _DetailsViewState extends State<DetailsView> {
               onPressed: () {
                 context.pop();
               },
-              icon:  Icon(Icons.arrow_back_ios,color: Colors.black,)),
+              icon: Icon(
+                Icons.arrow_back_ios,
+                color: Colors.black,
+              )),
           title: const Text(
             'Character detail',
             style: TextStyle(color: Colors.black),
@@ -84,7 +88,7 @@ class _DetailsViewState extends State<DetailsView> {
               SizedBox(
                 height: size.height / 40,
               ),
-              InfoWidget(
+              _InfoWidget(
                 character: widget.character,
                 size: size,
               )
@@ -135,10 +139,10 @@ class CharacterImageWidget extends StatelessWidget {
   }
 }
 
-class InfoWidget extends StatelessWidget {
+class _InfoWidget extends StatelessWidget {
   final CharacterModel character;
   final Size size;
-  const InfoWidget({super.key, required this.character, required this.size});
+  const _InfoWidget({super.key, required this.character, required this.size});
 
   @override
   Widget build(BuildContext context) {
@@ -162,40 +166,38 @@ class InfoWidget extends StatelessWidget {
             SizedBox(
               height: size.height / 80,
             ),
-            RichText(
-              text: TextSpan(style: TextStyle(color: Colors.black), children: [
-                TextSpan(text: 'Status : '),
-                TextSpan(
-                    text: character.status.name.toUpperCase(),
-                    style: TextStyle(fontWeight: FontWeight.bold))
-              ]),
-            ),
+            _RichtTextInfoCharacter(initialText: 'Status : ',text: character.status.name.toUpperCase(),),
             SizedBox(
               height: size.height / 60,
             ),
-            RichText(
+            _RichtTextInfoCharacter(initialText: 'Species : ',text: character.species.name.toUpperCase(),),
+            /* RichText(
               text: TextSpan(style: TextStyle(color: Colors.black), children: [
                 TextSpan(text: 'Species : '),
                 TextSpan(
                     text: character.species.name.toUpperCase(),
                     style: TextStyle(fontWeight: FontWeight.bold))
               ]),
-            ),
+            ), */
             SizedBox(
               height: size.height / 60,
             ),
-            RichText(
+            _RichtTextInfoCharacter(initialText: 'Gender : ',text: character.gender.name,),
+            /* RichText(
               text: TextSpan(style: TextStyle(color: Colors.black), children: [
                 TextSpan(text: 'Gender : '),
                 TextSpan(
                     text: character.gender.name,
                     style: TextStyle(fontWeight: FontWeight.bold))
               ]),
-            ),
+            ), */
             SizedBox(
               height: size.height / 60,
             ),
-            RichText(
+            _RichtTextInfoCharacter(initialText: 'Type : ',text:  character.type.isEmpty
+                        ? 'UNKNOWN'
+                        : character.type.toUpperCase(),),
+            /* RichText(
               text: TextSpan(style: TextStyle(color: Colors.black), children: [
                 TextSpan(text: 'Type : '),
                 TextSpan(
@@ -204,32 +206,57 @@ class InfoWidget extends StatelessWidget {
                         : character.type.toUpperCase(),
                     style: TextStyle(fontWeight: FontWeight.bold))
               ]),
-            ),
+            ), */
             SizedBox(
               height: size.height / 60,
             ),
-            RichText(
+             _RichtTextInfoCharacter(initialText: 'Location : ',text:  character.location.name.toUpperCase()),
+            /* RichText(
               text: TextSpan(style: TextStyle(color: Colors.black), children: [
                 TextSpan(text: 'Location : '),
                 TextSpan(
                     text: character.location.name.toUpperCase(),
                     style: TextStyle(fontWeight: FontWeight.bold))
               ]),
-            ),
+            ), */
             SizedBox(
               height: size.height / 60,
             ),
-            RichText(
+            _RichtTextInfoCharacter(initialText: 'Episodes : ',text:  character.episode.length.toString().toUpperCase()),
+            /* RichText(
               text: TextSpan(style: TextStyle(color: Colors.black), children: [
                 TextSpan(text: 'Episodes : '),
                 TextSpan(
                     text: character.episode.length.toString().toUpperCase(),
                     style: TextStyle(fontWeight: FontWeight.bold))
               ]),
-            ),
+            ), */
           ],
         ),
       ),
+    );
+  }
+}
+
+class _RichtTextInfoCharacter extends StatelessWidget {
+  final String initialText;
+  final String text;
+  const _RichtTextInfoCharacter({
+    required this.text, required this.initialText,
+  });
+
+  
+
+  @override
+  Widget build(BuildContext context) {
+    return RichText(
+      text: TextSpan(style: TextStyle(color: Colors.black), children: [
+        TextSpan(text: text//'Status : '
+        ),
+        TextSpan(
+            text: text,//character.status.name.toUpperCase(),
+            style: TextStyle(fontWeight: FontWeight.bold))
+      ]),
     );
   }
 }

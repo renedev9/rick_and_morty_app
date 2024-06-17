@@ -24,6 +24,8 @@ class _SplashViewState extends State<SplashView> {
   @override
   Widget build(BuildContext context) {
    final ColorScheme colors = Theme.of(context).colorScheme;
+   
+   //* Valida en funcion del color primario del tema que quiera
     if(colors.primary==Colors.white){
 
     return Scaffold(

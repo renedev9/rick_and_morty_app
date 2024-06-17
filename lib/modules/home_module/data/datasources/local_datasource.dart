@@ -59,6 +59,7 @@ try {
   Future<Map<String,dynamic>> addCharacterList(int page,List<dynamic> listCharacter) async{
   Map<String,dynamic> map=  await getCharacterList();
   List<dynamic>list=json.decode(map['characters']);
+  // list.add(listCharacter.where((element) => element!=list));
   list.addAll(listCharacter);
   Map<String,dynamic>mapUpdated= {'page':page,'characters':json.encode(list)};
   setCharacterList(page, list);

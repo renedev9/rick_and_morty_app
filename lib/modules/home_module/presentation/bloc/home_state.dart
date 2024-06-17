@@ -8,13 +8,21 @@ abstract class HomeState extends Equatable {
 }
 
 final class HomeStandardState extends HomeState {
+  //* Control de la conectividad de la aplicacion ,dentro del modulo home
   final ConectivityValue? connectionState;
+  //* Control de estado de carga de la peticion
   final bool loading;
+  //* Failure el cual tiene el mensaje de error de cada peticion
   final Failure? failure;
+  //* Control del listados de personajes
   final ListCharacterModel characterList;
+  //* Control del total de paginas que se este trabajando en el filtro
   final int pages;
+  //* Pagina actual del filtro o listado de personajes
   final int currentPaginate;
-  final bool? activeFilter;
+  //* Chequea cuando este activo el filtro
+  final bool? activeFilter; 
+  //*Parametros a filtrar, para controlar elementos actuales de filtro en caso de perder conexion, ya que estos elementos filtrados no se almacenan localmente
   final Map<String,dynamic>? currentParamsToFilter;
   const HomeStandardState(  
       {required this.loading,
